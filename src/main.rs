@@ -19,7 +19,7 @@ pub struct InsertableUser {
 #[post("/users")]
 async fn create_user(user: web::Json<InsertableUser>) -> Result<HttpResponse, ActixError> {
     // Define the connection string
-    let connection_string = "host=127.0.0.1 port=5432 user=myuser password=mysecretpassword dbname=mydb";
+    let connection_string = "host=postgres port=5432 user=myuser password=mysecretpassword dbname=mydb";
     
     // Database connection logic...
     let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await.expect("Connection error");
@@ -42,7 +42,7 @@ async fn create_user(user: web::Json<InsertableUser>) -> Result<HttpResponse, Ac
 #[get("/users")]
 async fn get_users() -> Result<HttpResponse, ActixError> {
     // Define the connection string
-    let connection_string = "host=127.0.0.1 port=5432 user=myuser password=mysecretpassword dbname=mydb";
+    let connection_string = "host=postgres port=5432 user=myuser password=mysecretpassword dbname=mydb";
     
     // Database connection logic...
     let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await.expect("Connection Error");
@@ -75,7 +75,7 @@ async fn get_users() -> Result<HttpResponse, ActixError> {
 #[put("/users/{id}")]
 async fn update_user(id: web::Path<i32>, user: web::Json<InsertableUser>) -> Result<HttpResponse, ActixError> {
     // Define the connection string
-    let connection_string = "host=127.0.0.1 port=5432 user=myuser password=mysecretpassword dbname=mydb";
+    let connection_string = "host=postgres port=5432 user=myuser password=mysecretpassword dbname=mydb";
     
     let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await.expect("Connection Error");
 
@@ -94,7 +94,7 @@ async fn update_user(id: web::Path<i32>, user: web::Json<InsertableUser>) -> Res
 #[delete("/users/{id}")]
 async fn delete_user(id: web::Path<i32>) -> Result<HttpResponse, ActixError> {
     // Define the connection string
-    let connection_string = "host=127.0.0.1 port=5432 user=myuser password=mysecretpassword dbname=mydb";
+    let connection_string = "host=postgres port=5432 user=myuser password=mysecretpassword dbname=mydb";
 
     let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await.expect("Connection Error");
 
