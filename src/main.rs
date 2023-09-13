@@ -18,12 +18,11 @@ pub struct InsertableUser {
 
 #[post("/users")]
 async fn create_user(user: web::Json<InsertableUser>) -> Result<HttpResponse, ActixError> {
-    eprintln!("Executed query");
     // Define the connection string
     let connection_string = "host=127.0.0.1 port=5432 user=myuser password=mysecretpassword dbname=mydb";
     
     // Database connection logic...
-    let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await.expect("Some error");
+    let (client, connection) = tokio_postgres::connect(connection_string, NoTls).await.expect("Connection error");
 
     // The connection object performs the actual communication with the database,
     // so spawn it off to run on its own.
@@ -34,8 +33,8 @@ async fn create_user(user: web::Json<InsertableUser>) -> Result<HttpResponse, Ac
     });
 
     // Insert the user into the database
-    let insert_stmt = "INSERT INTO users (name, email) VALUES ($1, $2)";
-    client.execute(insert_stmt, &[&user.name, &user.email]).await.expect("SOme error");
+    let insert_stmt = "INSERT INTO users (name, email) VALUES ($1, $2);";
+    client.execute(insert_stmt, &[&user.name, &user.email]).await.expect("Query Error");
     // Return HttpResponse
     Ok(HttpResponse::Created().json(user.into_inner()))
 }
@@ -56,7 +55,7 @@ async fn get_users() -> Result<HttpResponse, ActixError> {
         }
     });
 
-    let result = client.query("SELECT id, name, email FROM users", &[]).await.expect("Query Error");
+    let result = client.query("SELECT id, name, email FROM users;", &[]).await.expect("Query Error");
     
     // Convert rows into Vec<User>
     let mut users = Vec::new();
@@ -86,7 +85,7 @@ async fn update_user(id: web::Path<i32>, user: web::Json<InsertableUser>) -> Res
         }
     });
 
-    let update_stmt = "UPDATE users SET name=$1, email=$2 WHERE id=$3";
+    let update_stmt = "UPDATE users SET name=$1, email=$2 WHERE id=$3;";
     client.execute(update_stmt, &[&user.name, &user.email,  &*id]).await.expect("Query Error");
 
     Ok(HttpResponse::Ok().json(user.into_inner()))
@@ -105,7 +104,7 @@ async fn delete_user(id: web::Path<i32>) -> Result<HttpResponse, ActixError> {
         }
     });
 
-    let delete_stmt = "DELETE FROM users WHERE id=$1";
+    let delete_stmt = "DELETE FROM users WHERE id=$1;";
     client.execute(delete_stmt, &[&*id]).await.expect("Query Error");
 
     Ok(HttpResponse::Ok().finish())
@@ -120,7 +119,7 @@ async fn main() -> std::io::Result<()> {
             .service(update_user)
             .service(delete_user)
     })
-    .bind("127.0.0.1:8080")?
+    .bind("0.0.0.0:8080")?
     .run()
     .await
 }

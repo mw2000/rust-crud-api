@@ -12,15 +12,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql # Mount the initialization scripts
+      - ./init.sql:/docker-entrypoint-initdb.d/create_tables.sql # Mount the initialization scripts
 
-  # rust_api:
-  #   build: .
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - postgres
-
+  rust_api:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
 
 volumes:
   postgres_data:
